@@ -3,22 +3,25 @@ package org.vladstasyshyn.githubapi.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @JsonPropertyOrder({"repositoryName", "owner", "branches"})
-public class GithubRepositoryResponse {
+public record GithubRepositoryResponse(@JsonProperty("name") String repositoryName, @JsonProperty("owner") Owner owner,
+                                       List<Branch> branches, @JsonIgnore boolean fork) {
+    public GithubRepositoryResponse(String repositoryName, Owner owner, List<Branch> branches, boolean fork) {
+        if (branches == null) {
+            this.branches = new ArrayList<>();
+        } else {
+            this.branches = List.copyOf(branches);
+        }
+        this.repositoryName = repositoryName;
+        this.owner = owner;
+        this.fork = fork;
+    }
 
-    @JsonProperty("name")
-    private String repositoryName;
-
-    @JsonProperty("owner")
-    private Owner owner;
-
-    private List<Branch> branches;
-
-    @JsonIgnore
-    private boolean fork;
+    public List<Branch> branches() {
+        return List.copyOf(branches);
+    }
 }

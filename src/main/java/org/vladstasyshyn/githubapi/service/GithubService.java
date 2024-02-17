@@ -23,29 +23,28 @@ public class GithubService {
     @Autowired
     public GithubService(WebClient.Builder webClientBuilder, GithubApiProperties properties) {
         this.properties = properties;
-        this.webClient = webClientBuilder.baseUrl(properties.getBaseUrl())
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + properties.getAccessToken())
+        this.webClient = webClientBuilder.baseUrl(properties.baseUrl())
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + properties.accessToken())
                 .defaultHeader(HttpHeaders.ACCEPT, "application/json")
                 .build();
     }
 
     public Mono<List<GithubRepositoryResponse>> getRepositories(String username) {
         return webClient.get()
-                .uri(properties.getUserReposUri(), username)
+                .uri(properties.userReposUri(), username)
                 .retrieve()
                 .bodyToFlux(GithubRepositoryResponse.class)
-                .flatMap(repo -> getBranches(username, repo.getRepositoryName())
+                .flatMap(repo -> getBranches(username, repo.repositoryName())
                         .map(branches -> {
-                            repo.setBranches(branches);
-                            return repo;
+                            return new GithubRepositoryResponse(repo.repositoryName(), repo.owner(), branches, repo.fork());
                         })
-                        .filter(response -> !response.isFork()))
+                        .filter(response -> !response.fork()))
                 .collectList();
     }
 
     public Mono<List<Branch>> getBranches(String username, String repo) {
         return webClient.get()
-                .uri(properties.getUserRepoBranchesUri(), username, repo)
+                .uri(properties.userRepoBranchesUri(), username, repo)
                 .retrieve()
                 .bodyToFlux(Branch.class)
                 .collectList();
