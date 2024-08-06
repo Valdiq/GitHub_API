@@ -2,6 +2,7 @@ package org.vladstasyshyn.githubapi.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -29,6 +30,7 @@ public class GithubService {
                 .build();
     }
 
+    @Cacheable(value = "no-forks-repos")
     public Mono<List<GithubRepositoryResponse>> getRepositories(String username) {
         return webClient.get()
                 .uri(properties.userReposUri(), username)
