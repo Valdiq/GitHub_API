@@ -1,6 +1,6 @@
 # GitHub REST API Client
 
-This project is a GitHub REST API client implemented in Java using Spring Boot.
+This project is a GitHub REST API client implemented in Java using Spring Boot, Spring WebFlux, Spring Boot Caching, Redis, and WebTestClient for integration testing.
 
 The GitHub REST API Client is a simple application that allows users to retrieve information abou GitHub repositories and their branches using the GitHub API.
 
